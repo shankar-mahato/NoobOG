@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Find activities near you — NoobOG{% endblock %}
+{% block content %}
+<section class="home-hero">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="live-dot"></span> FIND YOUR NEXT WAY TO PLAY</p>
+    <h1>Pick a plan.<br><span>Then get out there.</span></h1>
+    <p class="lede">Find gaming, sports, and recreation venues around you. Check availability and book your next session.</p>
+    <a class="button button-lime" href="#activities">Explore activities <span aria-hidden="true">↓</span></a>
+    <div class="hero-proof"><span class="proof-mark">✳</span><span>Good games start with a good plan.</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    <div class="art-sticker sticker-top">PICK<br>YOUR PLAY</div>
+    <div class="art-console"><div class="console-screen"><span>GO</span><small>YOUR NEXT SESSION</small></div><div class="console-controls"><i></i><i></i><b></b><b></b></div></div>
+    <div class="art-sticker sticker-bottom">PLAY<br>YOUR WAY ↗</div>
+  </div>
+</section>
+
+<section class="activity-section" id="activities" aria-labelledby="activity-heading">
+  <div class="activity-heading">
+    <div><p class="eyebrow">A LITTLE BIT OF EVERYTHING</p><h2 id="activity-heading">What are you in the mood for?</h2></div>
+    <span class="activity-scroll-hint">SCROLL TO EXPLORE <span aria-hidden="true">→</span></span>
+  </div>
+  <div class="activity-slider" aria-label="Browse activity types">
+    {% for activity in categories %}
+      <a class="activity-card activity-{{ activity.slug }}{% if selected_category == activity.slug %} activity-selected{% endif %}" href="?category={{ activity.slug }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}#venues" {% if selected_category == activity.slug %}aria-current="true"{% endif %}>
+        <span class="activity-icon" aria-hidden="true">{{ activity.icon }}</span>
+        <span class="activity-label">{{ activity.name }}</span>
+        <span class="activity-arrow" aria-hidden="true">↗</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="search-panel" id="venues">
+  <form method="get" class="search-form">
+    <label class="search-field"><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">Search by venue name, area, or pincode</span><input type="search" name="q" value="{{ query }}" placeholder="Venue name, area, or pincode"></label>
+    <label class="category-field"><span class="sr-only">Activity type</span><select name="category"><option value="">All activities</option>{% for activity in categories %}<option value="{{ activity.slug }}" {% if selected_category == activity.slug %}selected{% endif %}>{{ activity.name }}</option>{% endfor %}</select></label>
+    <button class="button button-dark" type="submit">Find venues <span aria-hidden="true">↗</span></button>
+  </form>
+</section>
+
+<section class="listing-section">
+  <div class="section-heading">
+    <div><p class="eyebrow">{% if query or selected_category %}MATCHING YOUR SEARCH{% else %}READY WHEN YOU ARE{% endif %}</p><h2>{% if query %}Places for “{{ query }}”{% elif selected_category %}{{ selected_category_label }} venues{% else %}Find your next favorite place.{% endif %}</h2></div>
+    <span class="result-count">{{ venues|length }} {% if venues|length == 1 %}VENUE{% else %}VENUES{% endif %}</span>
+  </div>
+  {% if venues %}
+    <div class="venue-grid">
+      {% for venue in venues %}
+        {% include "booking/_venue_card.html" with venue=venue %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-icon">⌕</span><h3>No venues found.</h3><p>Try a different venue name, area, pincode, or activity.</p>{% if not user.is_authenticated %}<a class="button button-dark" href="{% url 'vendor_portal' %}">List your venue ↗</a>{% endif %}</div>
+  {% endif %}
+</section>
+
+{% if user.is_authenticated and user.role == "player" %}
+  {% if favorites %}
+    <section class="collection-section">
+      <div class="section-heading"><div><p class="eyebrow">BASED ON YOUR LIKES AND SAVES</p><h2>Venues you like</h2></div><a class="arrow-link" href="{% url 'favorites' %}">See saved favorites ↗</a></div>
+      <div class="venue-grid">{% for venue in favorites %}{% include "booking/_venue_card.html" with venue=venue %}{% endfor %}</div>
+    </section>
+  {% endif %}
+{% endif %}
+{% if recent_venues and not user.is_authenticated %}
+  <section class="collection-section">
+    <div class="section-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2>Recently viewed</h2></div></div>
+    <div class="venue-grid">{% for venue in recent_venues %}{% include "booking/_venue_card.html" with venue=venue %}{% endfor %}</div>
+  </section>
+{% endif %}
+
+{% if popular_venues and not user.is_authenticated %}
+  <section class="collection-section">
+    <div class="section-heading"><div><p class="eyebrow">LOVED BY THE COMMUNITY</p><h2>Most liked venues</h2></div></div>
+    <div class="venue-grid">{% for venue in popular_venues %}{% include "booking/_venue_card.html" with venue=venue %}{% endfor %}</div>
+  </section>
+{% endif %}
+{% if not user.is_authenticated %}
+  <section class="vendor-callout"><div><p class="eyebrow">HAVE A PLACE PEOPLE CAN PLAY?</p><h2>Bring your venue<br>to the NoobOG community.</h2></div><a class="button button-lime" href="{% url 'vendor_portal' %}">List your venue <span aria-hidden="true">↗</span></a></section>
+{% endif %}
+{% endblock %}

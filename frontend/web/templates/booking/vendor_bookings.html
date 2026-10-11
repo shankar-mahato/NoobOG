@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Booking requests — NoobOG vendor studio{% endblock %}
+{% block content %}
+<section class="dashboard-page">
+  <div class="page-heading"><div><p class="eyebrow">VENDOR STUDIO / BOOKING DESK</p><h1>Booking requests<span class="heading-period">.</span></h1><p class="lede">New requests hold one system until you accept or release them.</p></div><a class="button button-outline" href="{% url 'vendor_dashboard' %}">← Vendor studio</a></div>
+  {% if bookings %}
+    <div class="booking-list">
+      {% for booking in bookings %}
+        <article class="vendor-booking-card">
+          <div class="booking-date"><span>{{ booking.game_date|date:"M"|upper }}</span><strong>{{ booking.game_date|date:"j" }}</strong></div>
+          <div class="booking-main"><p class="eyebrow">{{ booking.get_status_display|upper }} · {{ booking.venue.name|upper }}</p><h2>{{ booking.player.username }}</h2><p class="venue-location">{{ booking.player.email|default:"No player email provided" }}</p><p class="booking-reference">Booking ID: {{ booking.reference_code }}</p></div>
+          <div class="booking-time"><strong>{{ booking.start_time|time:"g:i A" }}</strong><span>{{ booking.duration_label }} · {{ booking.venue.system_count }} bookable units</span></div>
+          <div class="booking-actions">
+            {% if booking.status == "pending" %}
+              <form method="post" action="{% url 'accept_booking' booking.id %}">{% csrf_token %}<button class="button button-dark button-small" type="submit">Accept</button></form>
+            {% endif %}
+            <form method="post" action="{% url 'release_booking' booking.id %}">{% csrf_token %}<button class="button button-outline button-small" type="submit">Release system</button></form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-icon">◷</span><h3>No active requests.</h3><p>New player requests will appear here and be emailed to your vendor account.</p><a class="button button-dark" href="{% url 'vendor_dashboard' %}">Back to vendor studio ↗</a></div>
+  {% endif %}
+</section>
+{% endblock %}

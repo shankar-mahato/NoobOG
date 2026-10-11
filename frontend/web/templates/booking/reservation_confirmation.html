@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Review reservation — NoobOG{% endblock %}
+{% block content %}
+<section class="reservation-page reservation-confirmation-page">
+  <div class="reservation-topline">
+    <a class="back-link" href="{% url 'reservation_results' %}?category={{ venue.category }}&venue={{ venue.pk }}&date={{ selected_date|date:'Y-m-d' }}&duration_minutes={{ duration_minutes }}">← Available sessions</a>
+    <span class="reservation-step">STEP 3 OF 3</span>
+  </div>
+  <header class="reservation-heading confirmation-heading">
+    <p class="eyebrow">REVIEW YOUR SESSION</p>
+    <h1>{{ start_time|time:"g:i A" }} · {{ venue.name }}</h1>
+    <p>Check the details before sending your booking request.</p>
+  </header>
+  <section class="reservation-summary" aria-label="Reservation details">
+    <div class="reservation-summary-row"><span>DATE</span><strong>{{ selected_date|date:"M j, Y" }}</strong></div>
+    <div class="reservation-summary-row"><span>TIME</span><strong>{{ start_time|time:"g:i A" }} – {{ end_time|time:"g:i A" }}</strong></div>
+    <div class="reservation-summary-row"><span>LOCATION</span><strong>{{ venue.display_address }}</strong></div>
+    <div class="reservation-summary-row"><span>SERVICE</span><strong>{{ venue.get_category_display }}</strong></div>
+    <div class="reservation-summary-row"><span>SERVICE LOCATION</span><strong>{{ venue.name }}</strong></div>
+    <div class="reservation-summary-row"><span>RESOURCE TYPE</span><strong>{{ resource_type }} <small>· {{ units_left }} available</small></strong></div>
+    <div class="reservation-summary-row reservation-host-row"><span>HOST</span><strong>{{ host_name }}</strong></div>
+    <div class="reservation-summary-row"><span>HOST FEE</span><strong>₹{{ host_fee|floatformat:2 }}</strong></div>
+    <div class="reservation-summary-row reservation-total-row"><span>TOTAL FEE</span><strong>₹{{ total_fee|floatformat:2 }}</strong></div>
+  </section>
+  {% if user.is_authenticated and user.role == "player" %}
+    <form class="reservation-submit-form" method="post" action="{% url 'book_slot' venue.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="game_date" value="{{ selected_date|date:'Y-m-d' }}">
+      <input type="hidden" name="start_time" value="{{ start_time|time:'H:i' }}">
+      <input type="hidden" name="duration_minutes" value="{{ duration_minutes }}">
+      <button class="button button-dark reservation-reserve-button" type="submit">Reserve session <span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="reservation-note">Your booking is held while the vendor reviews and confirms it.</p>
+  {% else %}
+    <a class="button button-dark reservation-reserve-button" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Log in to reserve <span aria-hidden="true">↗</span></a>
+  {% endif %}
+</section>
+{% endblock %}

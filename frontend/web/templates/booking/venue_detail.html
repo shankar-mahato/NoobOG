@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ venue.name }} — NoobOG{% endblock %}
+{% block content %}
+<section class="detail-page">
+  {% if is_vendor_view %}
+    <a class="back-link" href="{% url 'vendor_dashboard' %}">← Vendor studio</a>
+  {% else %}
+    <a class="back-link" href="{% url 'venue_list' %}">← All parlours</a>
+  {% endif %}
+  <div class="detail-layout">
+    <div>
+      <div class="detail-art venue-art venue-art-{{ venue.category }}{% if venue.photo %} venue-art-photo{% endif %}">
+        {% if venue.photo %}<img class="venue-photo" src="{{ venue.photo.url }}" alt="Photo of {{ venue.name }}">{% endif %}
+        <span class="venue-art-index">NOOBOG VENUE · {{ venue.system_count }} UNITS</span><span class="venue-glyph">{{ venue.category_icon }}</span><span class="venue-art-label">{{ venue.get_category_display|upper }}</span>
+      </div>
+      <div class="detail-description"><p class="eyebrow">ABOUT THIS PLACE</p><p>{% if venue.description %}{{ venue.description|linebreaksbr }}{% else %}A great setup, good people, and the next game waiting to happen.{% endif %}</p></div>
+    </div>
+    <div class="detail-info">
+      <p class="eyebrow">{{ venue.get_category_display|upper }} · ♥ {{ venue.like_count }}</p>
+      <h1>{{ venue.name }}</h1>
+      <p class="venue-location"><span aria-hidden="true">⌖</span> {{ venue.display_address }}</p>
+      <div class="price-large">₹{{ venue.hourly_rate }} <span>/ hour · {{ venue.system_count }} bookable units</span></div>
+      {% if user.is_authenticated and user.role == "player" %}
+        <div class="venue-social-actions detail-social-actions">
+          <form method="post" action="{% url 'toggle_favorite' venue.id %}">{% csrf_token %}<button class="social-button{% if is_favorite %} social-active{% endif %}" type="submit">{% if is_favorite %}♥ Saved to favorites{% else %}♡ Save to favorites{% endif %}</button></form>
+          <form method="post" action="{% url 'toggle_like' venue.id %}">{% csrf_token %}<button class="social-button{% if is_liked %} social-active{% endif %}" type="submit">{% if is_liked %}♥ Liked{% else %}♡ Like venue{% endif %}</button></form>
+        </div>
+      {% endif %}
+      <div class="divider"></div>
+      <div class="section-heading compact-heading"><div><h2>{% if is_vendor_view %}Daily availability{% else %}Choose your session{% endif %}</h2><p>Open daily, {{ venue.opening_time|time:"g:i A" }}–{{ closing_label }}. Sessions are generated automatically; booked times disappear.</p></div></div>
+      {% if is_vendor_view %}
+        <form class="date-picker" method="get">
+          <label for="booking-date">Choose a date</label>
+          <input id="booking-date" type="date" name="date" min="{{ today|date:'Y-m-d' }}" value="{{ selected_date|date:'Y-m-d' }}">
+          <button class="button button-outline button-small" type="submit">Show times</button>
+        </form>
+        <div class="schedule-list">
+          {% for row in schedule %}
+            <div class="schedule-row{% if not row.options %} schedule-row-unavailable{% endif %}">
+              <div class="schedule-time"><strong>{{ row.start|time:"g:i A" }}</strong><span>{% if row.systems_left %}{{ row.systems_left }} of {{ venue.system_count }} units free for 1 hour{% else %}No unit free at this time{% endif %}</span></div>
+              {% if row.options %}<span class="availability-note">{{ row.options|length }} duration{% if row.options|length != 1 %}s{% endif %} available</span>{% else %}<span class="availability-note">Unavailable</span>{% endif %}
+            </div>
+          {% empty %}
+            <div class="empty-inline"><strong>No future hours left on this date.</strong><span>Choose another date to see availability.</span></div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <section class="reservation-callout">
+          <p class="eyebrow">YOUR NEXT SESSION STARTS HERE</p>
+          <p>Choose a date and session length to see bookable times at this venue.</p>
+          <a class="button button-dark" href="{% url 'reservation_search' %}?venue={{ venue.pk }}&category={{ venue.category }}">Find a session <span aria-hidden="true">↗</span></a>
+        </section>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

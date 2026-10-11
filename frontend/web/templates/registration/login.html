@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Log in — NoobOG{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card">
+    <p class="eyebrow">WELCOME BACK</p>
+    <h1>Ready for another round?</h1>
+    <p class="lede">Log in to view and manage your player bookings.</p>
+    <form method="post" class="form-stack">{% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      <label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}
+      {{ form.username.errors }}
+      <label for="{{ form.password.id_for_label }}">Password</label>{{ form.password }}
+      {{ form.password.errors }}
+      <button class="button button-dark button-wide" type="submit">Log in <span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="form-note">New player? <a href="{% url 'signup' %}">Create a player account</a></p>
+  </div>
+</section>
+{% endblock %}

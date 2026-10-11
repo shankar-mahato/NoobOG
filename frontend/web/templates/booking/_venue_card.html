@@ -1,0 +1,19 @@
+<article class="venue-card">
+  <a class="venue-art venue-art-{{ venue.category }}{% if venue.photo %} venue-art-photo{% endif %}" href="{% url 'venue_detail' venue.id %}" aria-label="View {{ venue.name }}">
+    {% if venue.photo %}<img class="venue-photo" src="{{ venue.photo.url }}" alt="" loading="lazy">{% endif %}
+    <span class="venue-art-index">0{{ forloop.counter }}</span>
+    <span class="venue-glyph">{{ venue.category_icon }}</span>
+    <span class="venue-art-label">{{ venue.get_category_display|upper }}</span>
+  </a>
+  <div class="venue-card-body">
+    <div class="venue-name-row"><h3><a href="{% url 'venue_detail' venue.id %}">{{ venue.name }}</a></h3><span class="rating">♥ {{ venue.like_count|default:0 }}</span></div>
+    <p class="venue-location"><span aria-hidden="true">⌖</span> {{ venue.display_address }}</p>
+    <div class="venue-card-foot"><p class="price">₹{{ venue.hourly_rate }} <span>/ hour</span></p><a class="arrow-link" href="{% url 'venue_detail' venue.id %}">View slots <span aria-hidden="true">↗</span></a></div>
+    {% if user.is_authenticated and user.role == "player" %}
+      <div class="venue-social-actions">
+        <form method="post" action="{% url 'toggle_favorite' venue.id %}">{% csrf_token %}<button class="social-button{% if venue.id in favorite_venue_ids %} social-active{% endif %}" type="submit" aria-label="{% if venue.id in favorite_venue_ids %}Remove {{ venue.name }} from favorites{% else %}Add {{ venue.name }} to favorites{% endif %}">{% if venue.id in favorite_venue_ids %}♥ Saved{% else %}♡ Save{% endif %}</button></form>
+        <form method="post" action="{% url 'toggle_like' venue.id %}">{% csrf_token %}<button class="social-button{% if venue.id in liked_venue_ids %} social-active{% endif %}" type="submit" aria-label="{% if venue.id in liked_venue_ids %}Unlike{% else %}Like{% endif %} {{ venue.name }}">{% if venue.id in liked_venue_ids %}♥ Liked{% else %}♡ Like{% endif %}</button></form>
+      </div>
+    {% endif %}
+  </div>
+</article>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Vendor portal — NoobOG{% endblock %}
+{% block content %}
+<section class="home-hero">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="live-dot"></span> NOOBOG FOR VENUE PARTNERS</p>
+    <h1>More visitors.<br><span>Fewer empty slots.</span></h1>
+    <p class="lede">Create a vendor account to list your venue, publish availability, and welcome people looking for their next activity.</p>
+    <div class="vendor-portal-actions">
+      <a class="button button-lime" href="{% url 'vendor_signup' %}">Create vendor account <span aria-hidden="true">↗</span></a>
+      <a class="button button-outline vendor-login-link" href="{% url 'vendor_login' %}">Vendor log in</a>
+    </div>
+    <div class="hero-proof"><span class="proof-mark">✳</span><span>Dedicated account. Dedicated vendor studio.</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    <div class="art-sticker sticker-top">YOUR<br>VENUE</div>
+    <div class="art-console"><div class="console-screen"><span>GG</span><small>VENUE · READY</small></div><div class="console-controls"><i></i><i></i><b></b><b></b></div></div>
+    <div class="art-sticker sticker-bottom">LIST<br>YOUR SPACE ↗</div>
+  </div>
+</section>
+<section class="listing-section portal-features">
+  <div class="section-heading"><div><p class="eyebrow">YOUR VENDOR STUDIO</p><h2>Everything to get<br>your venue discovered.</h2></div></div>
+  <div class="vendor-stats portal-stats">
+    <div><strong>01</strong><span>Create a public venue listing</span></div>
+    <div><strong>02</strong><span>Set your operating hours and bookable capacity; sessions generate automatically</span></div>
+    <div><strong>03</strong><span>Track your bookings from one place</span></div>
+  </div>
+</section>
+{% endblock %}

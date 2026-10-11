@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit venue{% else %}Register a venue{% endif %} — NoobOG{% endblock %}
+{% block content %}
+<section class="dashboard-page form-page">
+  <a class="back-link" href="{% url 'vendor_dashboard' %}">← Vendor studio</a>
+  <div class="form-page-heading"><p class="eyebrow">VENDOR STUDIO</p><h1>{% if is_edit %}The details<span class="heading-period">.</span>{% else %}Put your venue<br>on the map<span class="heading-period">.</span>{% endif %}</h1><p class="lede">Set your venue details and operating hours. NoobOG generates bookable sessions automatically.</p></div>
+  <form method="post" enctype="multipart/form-data" class="form-card form-stack">{% csrf_token %}
+    {% for field in form %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {% if field.name == "photo" and venue.photo %}
+        <img class="venue-photo-preview" src="{{ venue.photo.url }}" alt="Current photo for {{ venue.name }}">
+      {% endif %}
+      {{ field }}
+      {% if field.help_text %}<span class="help-text">{{ field.help_text }}</span>{% endif %}
+      {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
+    {% endfor %}
+    <div class="form-actions"><a class="button button-outline" href="{% url 'vendor_dashboard' %}">Cancel</a><button class="button button-dark" type="submit">{% if is_edit %}Save venue{% else %}List your venue{% endif %} ↗</button></div>
+  </form>
+</section>
+{% endblock %}

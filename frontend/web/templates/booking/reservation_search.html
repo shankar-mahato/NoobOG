@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Reservations — NoobOG{% endblock %}
+{% block content %}
+<section class="reservation-page">
+  <div class="reservation-topline">
+    <a class="back-link" href="{% url 'venue_list' %}">← Explore venues</a>
+    <span class="reservation-step">STEP 1 OF 3</span>
+  </div>
+  <header class="reservation-heading">
+    <p class="eyebrow">FIND YOUR NEXT GAME</p>
+    <h1>Reservations</h1>
+    <p>{% if selected_venue %}Choose a date and session length to see available sessions at this venue.{% else %}Choose an activity and we’ll find available sessions near you.{% endif %}</p>
+  </header>
+  <form class="reservation-form" method="get" action="{% url 'reservation_results' %}">
+    <div class="reservation-field reservation-activity">
+      {% if selected_venue %}
+        <span>VENUE</span>
+        <strong>{{ selected_venue.name }}</strong>
+        <input type="hidden" name="venue" value="{{ selected_venue.pk }}">
+      {% endif %}
+      <span>ACTIVITY</span>
+      <strong>{{ category_label }}</strong>
+      <input type="hidden" name="category" value="{{ selected_category }}">
+    </div>
+    <label class="reservation-field">
+      <span>DATE</span>
+      <span class="reservation-date">
+        <span aria-hidden="true">▦</span>
+        <input type="date" name="date" min="{{ today|date:'Y-m-d' }}" value="{{ selected_date|date:'Y-m-d' }}" required>
+      </span>
+    </label>
+    <fieldset class="reservation-duration">
+      <legend>DURATION</legend>
+      <div class="reservation-duration-options">
+        <label><input type="radio" name="duration_minutes" value="60"{% if duration_minutes == 60 %} checked{% endif %}><span>60 MIN</span></label>
+        <label><input type="radio" name="duration_minutes" value="90"{% if duration_minutes == 90 %} checked{% endif %}><span>90 MIN</span></label>
+        <label><input type="radio" name="duration_minutes" value="120"{% if duration_minutes == 120 %} checked{% endif %}><span>120 MIN</span></label>
+      </div>
+    </fieldset>
+    <button class="button button-dark reservation-search-button" type="submit">Search available sessions <span aria-hidden="true">↗</span></button>
+  </form>
+</section>
+{% endblock %}

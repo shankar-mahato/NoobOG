@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Vendor log in — NoobOG{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card">
+    <p class="eyebrow">VENDOR STUDIO</p>
+    <h1>Welcome back.</h1>
+    <p class="lede">Log in to manage your venues and sessions.</p>
+    <form method="post" class="form-stack">{% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      <label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}
+      {{ form.username.errors }}
+      <label for="{{ form.password.id_for_label }}">Password</label>{{ form.password }}
+      {{ form.password.errors }}
+      <button class="button button-dark button-wide" type="submit">Vendor log in <span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="form-note">New to NoobOG? <a href="{% url 'vendor_signup' %}">Create a vendor account</a></p>
+  </div>
+</section>
+{% endblock %}

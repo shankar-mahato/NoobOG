@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Vendor studio — NoobOG{% endblock %}
+{% block content %}
+<section class="dashboard-page">
+  <div class="page-heading"><div><p class="eyebrow">VENDOR STUDIO / OVERVIEW</p><h1>Your floor,<br>at a glance<span class="heading-period">.</span></h1><p class="lede">Manage your venues and keep your bookable spaces filled.</p></div><div class="page-actions">{% if pending_count %}<a class="button button-lime" href="{% url 'vendor_bookings' %}">{{ pending_count }} request{% if pending_count != 1 %}s{% endif %} waiting ↗</a>{% endif %}<a class="button button-dark" href="{% url 'venue_create' %}">Add a venue <span aria-hidden="true">＋</span></a></div></div>
+  {% if venues %}
+    <div class="vendor-venue-list">
+      {% for venue in venues %}
+        <article class="vendor-venue-card">
+          <div class="vendor-venue-top"><div class="vendor-venue-icon venue-art-{{ venue.category }}">{% if venue.photo %}<img src="{{ venue.photo.url }}" alt="" class="vendor-venue-photo">{% else %}{{ venue.category_icon }}{% endif %}</div><div class="vendor-venue-title"><p class="eyebrow">{{ venue.get_category_display|upper }} · ₹{{ venue.hourly_rate }}/HR</p><h2>{{ venue.name }}</h2><p class="venue-location">⌖ {{ venue.display_address }}</p></div><span class="status-badge">{% if venue.is_active %}LIVE LISTING{% else %}PAUSED{% endif %}</span></div>
+          <div class="vendor-stats"><div><strong>{{ venue.pending_count }}</strong><span>Requests to review</span></div><div><strong>{{ venue.booking_count }}</strong><span>Active bookings</span></div><div><strong>{{ venue.system_count }}</strong><span>Bookable units</span></div></div>
+          <div class="vendor-actions"><a class="arrow-link" href="{% url 'venue_detail' venue.id %}">View daily availability ↗</a><a class="button button-outline button-small" href="{% url 'venue_edit' venue.id %}">Edit venue &amp; hours</a></div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-icon">＋</span><h3>Bring your parlour to the map.</h3><p>Create a venue profile, add your open sessions, and let players find you.</p><a class="button button-dark" href="{% url 'venue_create' %}">Register your first venue ↗</a></div>
+  {% endif %}
+</section>
+{% endblock %}

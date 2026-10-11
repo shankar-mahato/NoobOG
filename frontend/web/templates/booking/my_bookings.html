@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}My bookings — NoobOG{% endblock %}
+{% block content %}
+<section class="dashboard-page">
+  <div class="page-heading"><div><p class="eyebrow">YOUR PLAY PLAN</p><h1>My bookings<span class="heading-period">.</span></h1><p class="lede">All your upcoming sessions, in one place.</p></div><a class="button button-dark" href="{% url 'venue_list' %}">Find another venue ↗</a></div>
+  {% if bookings %}
+    <div class="booking-list">
+      {% for booking in bookings %}
+        <article class="booking-card"><div class="booking-date"><span>{{ booking.game_date|date:"M"|upper }}</span><strong>{{ booking.game_date|date:"j" }}</strong></div><div class="booking-main"><p class="eyebrow">{{ booking.get_status_display|upper }} · {{ booking.venue.get_category_display|upper }}</p><h2>{{ booking.venue.name }}</h2><p class="venue-location">{{ booking.venue.display_address }}</p><p class="booking-reference">Booking ID: {{ booking.reference_code }}</p></div><div class="booking-time"><strong>{{ booking.start_time|time:"g:i A" }}</strong><span>{{ booking.duration_label }} · ₹{{ booking.venue.hourly_rate }}/hr</span></div><a class="arrow-link" href="{% url 'venue_detail' booking.venue.id %}?date={{ booking.game_date|date:'Y-m-d' }}">Venue ↗</a></article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state"><span class="empty-icon">◷</span><h3>Nothing booked just yet.</h3><p>Your next great session is only a few taps away.</p><a class="button button-dark" href="{% url 'venue_list' %}">Explore venues ↗</a></div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Available sessions — NoobOG{% endblock %}
+{% block content %}
+<section class="reservation-page reservation-results-page">
+  <div class="reservation-topline">
+    <a class="back-link" href="{% url 'reservation_search' %}?category={{ category }}{% if request.GET.venue %}&venue={{ request.GET.venue }}{% endif %}&date={{ selected_date|date:'Y-m-d' }}&duration_minutes={{ duration_minutes }}">← Edit search</a>
+    <span class="reservation-step">STEP 2 OF 3</span>
+  </div>
+  <header class="reservation-heading results-heading">
+    <p class="eyebrow">{% if selected_venue %}{{ selected_venue.name|upper }} · {% endif %}{{ category_label|upper }} · {{ selected_date|date:"D, M j, Y" }}</p>
+    <h1>Available sessions</h1>
+    <p>{{ duration_label }} sessions</p>
+  </header>
+  <div class="reservation-results-bar"><strong>SEARCH RESULTS</strong><span>TOTAL: {{ total_slots }}</span></div>
+  <div class="reservation-results-list">
+    {% for result in results %}
+      <a class="reservation-result" href="{{ result.confirmation_url }}">
+        <span class="reservation-result-main">
+          <span class="reservation-result-venue">{{ result.venue.name }}</span>
+          <span class="reservation-result-time">{{ result.start_time|time:"g:i" }} – {{ result.end_time|time:"g:i A" }}</span>
+          <span class="reservation-result-meta">{{ result.venue.get_category_display }} · {{ result.venue.display_address }} · {{ result.units_left }} available</span>
+        </span>
+        <span class="reservation-result-price">₹{{ result.venue.hourly_rate }}<small>/ hour</small></span>
+        <span class="reservation-result-arrow" aria-hidden="true">›</span>
+      </a>
+    {% empty %}
+      <div class="reservation-empty">
+        <span aria-hidden="true">◷</span>
+        <h2>No sessions available for this date</h2>
+        <p>Sessions may have already started, or all bookable units{% if selected_venue %} at this venue{% endif %} may be reserved. Try the next day or change your search.</p>
+        <a class="button button-dark" href="{{ next_date_url }}">Check the next day</a>
+        <a class="button button-dark" href="{% url 'reservation_search' %}?category={{ category }}{% if request.GET.venue %}&venue={{ request.GET.venue }}{% endif %}&date={{ selected_date|date:'Y-m-d' }}&duration_minutes={{ duration_minutes }}">Change search</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

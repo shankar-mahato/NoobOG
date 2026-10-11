@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — NoobOG{% endblock %}
+{% block content %}
+<section class="listing-section collection-page">
+  <div class="section-heading"><div><p class="eyebrow">{{ eyebrow }}</p><h2>{{ heading }}</h2></div><a class="arrow-link" href="{% url 'venue_list' %}">Browse venues ↗</a></div>
+  {% if venues %}
+    <div class="venue-grid">{% for venue in venues %}{% include "booking/_venue_card.html" with venue=venue %}{% endfor %}</div>
+  {% else %}
+    <div class="empty-state"><span class="empty-icon">♡</span><h3>No favorites saved yet.</h3><p>Save venues you like and they will be easy to find here.</p><a class="button button-dark" href="{% url 'venue_list' %}">Explore venues ↗</a></div>
+  {% endif %}
+</section>
+{% endblock %}

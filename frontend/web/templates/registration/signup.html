@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Create a player account — NoobOG{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card auth-card-wide">
+    <p class="eyebrow">GET IN THE GAME</p>
+    <h1>Make room for play.</h1>
+    <p class="lede">Discover parlours, find a session, and book your next game night.</p>
+    <form method="post" class="form-stack">{% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<span class="help-text">{{ field.help_text|safe }}</span>{% endif %}
+        {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
+      {% endfor %}
+      <button class="button button-dark button-wide" type="submit">Create account <span aria-hidden="true">↗</span></button>
+    </form>
+    <p class="form-note">Already have a player account? <a href="{% url 'login' %}">Log in</a></p>
+  </div>
+</section>
+{% endblock %}

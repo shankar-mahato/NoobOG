@@ -1,0 +1,82 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#183b2d">
+    <title>{% block title %}NoobOG — play more, plan less{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'booking/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'booking/reservations.css' %}">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{% if user.is_authenticated and user.role == 'vendor' %}{% url 'vendor_dashboard' %}{% else %}{% url 'venue_list' %}{% endif %}" aria-label="NoobOG home"><span class="brand-mark">N</span><span>Noob<span class="brand-accent">OG</span></span></a>
+      <nav class="main-nav" aria-label="Main navigation">
+        {% if user.is_authenticated and user.role == "vendor" %}
+          <a href="{% url 'vendor_dashboard' %}">Vendor studio</a>
+          <a href="{% url 'vendor_bookings' %}">Bookings{% if vendor_pending_count %} <span class="nav-badge">{{ vendor_pending_count }}</span>{% endif %}</a>
+        {% elif user.is_authenticated and user.role == "player" %}
+          <a href="{% url 'venue_list' %}">Find a venue</a>
+          <a href="{% url 'favorites' %}">Favorites</a>
+          <a href="{% url 'my_bookings' %}">My bookings</a>
+        {% elif request.path|slice:":8" == "/vendor/" %}
+          <a href="{% url 'vendor_portal' %}">For parlours</a>
+        {% else %}
+          <a href="{% url 'venue_list' %}">Find a venue</a>
+          <a href="{% url 'vendor_portal' %}">For parlours</a>
+        {% endif %}
+      </nav>
+      <div class="header-actions">
+        {% if user.is_authenticated and user.role == "vendor" %}
+          <span class="user-greeting">Hi, {{ user.username }}</span>
+          <form action="{% url 'vendor_logout' %}" method="post" class="inline-form">{% csrf_token %}<button class="text-button" type="submit">Log out</button></form>
+        {% elif user.is_authenticated and user.role == "player" %}
+          <span class="user-greeting">Hi, {{ user.username }}</span>
+          <form action="{% url 'logout' %}" method="post" class="inline-form">{% csrf_token %}<button class="text-button" type="submit">Log out</button></form>
+        {% elif request.path|slice:":8" == "/vendor/" %}
+          {% if user.is_authenticated %}
+            <span class="user-greeting">Hi, {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" class="inline-form">{% csrf_token %}<button class="text-button" type="submit">Log out</button></form>
+          {% else %}
+            <a class="text-button" href="{% url 'vendor_login' %}">Vendor log in</a>
+            <a class="button button-dark button-small" href="{% url 'vendor_signup' %}">Create vendor account <span aria-hidden="true">↗</span></a>
+          {% endif %}
+        {% else %}
+          {% if user.is_authenticated %}
+            <span class="user-greeting">Hi, {{ user.username }}</span>
+            <form action="{% url 'logout' %}" method="post" class="inline-form">{% csrf_token %}<button class="text-button" type="submit">Log out</button></form>
+          {% else %}
+            <a class="text-button" href="{% url 'login' %}">Log in</a>
+            <a class="button button-dark button-small" href="{% url 'signup' %}">Join NoobOG <span aria-hidden="true">↗</span></a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </header>
+    <main>
+      {% if messages %}
+        <div class="message-stack" aria-live="polite">
+          {% for message in messages %}
+            <div class="message message-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <a class="brand brand-footer" href="{% if user.is_authenticated and user.role == 'vendor' %}{% url 'vendor_dashboard' %}{% else %}{% url 'venue_list' %}{% endif %}"><span class="brand-mark">N</span><span>Noob<span class="brand-accent">OG</span></span></a>
+      {% if user.is_authenticated and user.role == "vendor" %}
+        <span>Your venues. Your bookings. Your vendor studio.</span>
+        <a href="{% url 'vendor_dashboard' %}">Vendor studio ↗</a>
+      {% elif user.is_authenticated and user.role == "player" %}
+        <span>Good games start with a good plan.</span>
+      {% else %}
+        <span>Good games start with a good plan.</span>
+        <a href="{% url 'vendor_portal' %}">List your venue ↗</a>
+      {% endif %}
+    </footer>
+  </body>
+</html>
